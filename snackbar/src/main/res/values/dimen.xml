@@ -1,0 +1,43 @@
+<resources>
+
+    <dimen name="title_height">48dp</dimen>
+    <dimen name="shrink_move_size">20dp</dimen>
+
+    <item name="fling_divider" type="integer">5</item>
+
+    <!-- all text size define -->
+    <dimen name="txt_10">10sp</dimen>
+    <dimen name="txt_12">12sp</dimen>
+    <dimen name="txt_14">14sp</dimen>
+    <dimen name="txt_16">16sp</dimen>
+    <dimen name="txt_18">18sp</dimen>
+    <dimen name="txt_20">20sp</dimen>
+    <dimen name="txt_22">22sp</dimen>
+    <!-- all text size define -->
+
+    <!-- common define start -->
+    <dimen name="app_line_height">0.7dp</dimen>
+    <dimen name="app_border_height">1dp</dimen>
+    <dimen name="app_divider_height">1dp</dimen>
+    <dimen name="app_corner_small">1dp</dimen>
+    <dimen name="app_corner_middle">3dp</dimen>
+    <dimen name="app_corner_large">5dp</dimen>
+    <dimen name="app_corner_largest">8dp</dimen>
+    <dimen name="app_interval">10dp</dimen>
+    <dimen name="app_layout_interval">16dp</dimen>
+
+    <dimen name="app_titlebar_height">48dp</dimen>
+    <dimen name="app_button_height">38dp</dimen>
+    <dimen name="app_button_height_44">44dp</dimen>
+    <dimen name="app_avatar_size">48dp</dimen>
+    <dimen name="app_avatar_list_size">48dp</dimen>
+    <dimen name="app_avatar_small_size">32dp</dimen>
+    <dimen name="design_snackbar_padding_vertical">14dp</dimen>
+    <dimen name="design_snackbar_padding_vertical_2lines">24dp</dimen>
+    <!-- 标题 size -->
+    <dimen name="app_title_text_size">16sp</dimen>
+    <!-- 标题 左右按钮 size -->
+    <dimen name="app_title_btn_text_size">14sp</dimen>
+    <!-- common define end -->
+
+</resources>
