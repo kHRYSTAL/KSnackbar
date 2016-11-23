@@ -8,7 +8,7 @@ the snack like iOS notification, support:
 
 ### Screenshot
 
-![]()
+![](https://github.com/kHRYSTAL/KSnackbar/blob/master/screenshot/screenshot.gif)
 
 #### Usage  
 
