@@ -16,13 +16,14 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void showSnackbar(View view) {
-        SnackbarUtil.setShort(getApplicationContext(),"Success~")
+        SnackbarUtil.getInstance(this)
+                .setMessage("Success~")
                 .setMessageColor(0xffffffff)
-                .setAlpha(0.8f)
+                .setBackgroundAlpha(0.9f)
                 .setBackgroundColor(0xffffc026)
-                .leftAndRightDrawable(R.drawable.img_prompt_check, null)
-                .setHeightOverStatus(true)
-                .setGrivaty(Gravity.TOP).show();
+                .setLeftAndRightDrawable(R.drawable.img_prompt_check, null)
+                .setCoverStatusbar(true)
+                .setGravity(Gravity.TOP).show();
     }
 
     public void openActivity(View view) {

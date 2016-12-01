@@ -13,6 +13,7 @@ import android.support.annotation.Nullable;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.view.ViewCompat;
 import android.support.v4.widget.Space;
+import android.text.TextUtils;
 import android.util.SparseArray;
 import android.view.ContextThemeWrapper;
 import android.view.Gravity;
@@ -25,6 +26,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 
+
 /**
  * usage:
  * author: kHRYSTAL
@@ -33,9 +35,8 @@ import android.widget.TextView;
  * email: 723526676@qq.com
  */
 
-public class SnackbarWrapper {
+class SnackbarWrapper {
 
-    private final CharSequence text;
     private final int duration;
     private final WindowManager windowManager;
     private final Context appplicationContext;
@@ -57,6 +58,7 @@ public class SnackbarWrapper {
     @Snackbar.Duration
     private int mDuration = 1;
     private boolean changeDuration;
+    private CharSequence text;
 
     /**
      * 0.0f ~ 1.0f
@@ -77,6 +79,7 @@ public class SnackbarWrapper {
     private float radius;
     private int snackbarHeight;
     private boolean overStatus;
+    private float mTextSize;
 
     @NonNull
     public static SnackbarWrapper make(@NonNull Context applicationContext, @NonNull CharSequence text, @Snackbar.Duration int duration) {
@@ -88,6 +91,15 @@ public class SnackbarWrapper {
         this.windowManager = (WindowManager) appplicationContext.getSystemService(Context.WINDOW_SERVICE);
         this.text = text;
         this.duration = duration;
+    }
+
+    public Context getContext() {
+        return appplicationContext;
+    }
+
+    public void setMessage(CharSequence text){
+        this.text = text;
+
     }
 
     public void show() {
@@ -117,12 +129,16 @@ public class SnackbarWrapper {
         mSnackbar = Snackbar.make(snackbarContainer, text, duration);
         TextView messageTv = (TextView) mSnackbar.getView().findViewById(R.id.snackbar_text);
         Button actionBtn = (Button) mSnackbar.getView().findViewById(R.id.snackbar_action);
+        if (!TextUtils.isEmpty(text))
+            messageTv.setText(text);
         if (changeDuration)
             mSnackbar.setDuration(mDuration);
         if (mBackgroundColor != -1)
             mSnackbar.getView().setBackgroundColor(mBackgroundColor);
         if (mTextColor != -1)
             messageTv.setTextColor(mTextColor);
+        if (mTextSize != 0.0f)
+            messageTv.setTextSize(mTextSize);
         if (mActionColor != -1)
             actionBtn.setTextColor(mActionColor);
         if (mAlpha != 1.0f)
@@ -141,19 +157,20 @@ public class SnackbarWrapper {
         if (mLeftDrawable != null || mRightDrawable != null) {
 
             LinearLayout.LayoutParams paramsMessage = (LinearLayout.LayoutParams) messageTv.getLayoutParams();
-            paramsMessage = new LinearLayout.LayoutParams(paramsMessage.width, paramsMessage.height,0.0f);
+            paramsMessage = new LinearLayout.LayoutParams(paramsMessage.width, paramsMessage.height, 0.0f);
             messageTv.setLayoutParams(paramsMessage);
-            messageTv.setCompoundDrawablePadding(messageTv.getPaddingLeft());
+            messageTv.setCompoundDrawablePadding(ScreenUtil.dp2px(mSnackbar.getView().getContext(), 8));
             int textSize = (int) messageTv.getTextSize();
+
             if(mLeftDrawable != null){
-                mLeftDrawable.setBounds(0, 0, textSize, textSize);
+                mLeftDrawable.setBounds(0, 0, textSize + 4, textSize + 4);
             }
             if(mRightDrawable!=null){
-                mRightDrawable.setBounds(0, 0, textSize, textSize);
+                mRightDrawable.setBounds(0, 0, textSize + 4, textSize + 4);
             }
             messageTv.setCompoundDrawables(mLeftDrawable, null, mRightDrawable, null);
-            LinearLayout.LayoutParams paramsSpace = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT,LinearLayout.LayoutParams.WRAP_CONTENT,1.0f);
-            ((Snackbar.SnackbarLayout)mSnackbar.getView()).addView(new Space(mSnackbar.getView().getContext()),1,paramsSpace);
+            LinearLayout.LayoutParams paramsSpace = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT,1.0f);
+            ((Snackbar.SnackbarLayout) mSnackbar.getView()).addView(new Space(mSnackbar.getView().getContext()),1,paramsSpace);
             LinearLayout.LayoutParams layoutParams = (LinearLayout.LayoutParams) messageTv.getLayoutParams();
             layoutParams.gravity = Gravity.CENTER_VERTICAL;
         }
@@ -169,7 +186,7 @@ public class SnackbarWrapper {
             if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1){
                 messageTv = (TextView) mSnackbar.getView().findViewById(R.id.snackbar_text);
                 messageTv.setTextAlignment(View.TEXT_ALIGNMENT_GRAVITY);
-                messageTv.setGravity(Gravity.CENTER_VERTICAL|Gravity.RIGHT);
+                messageTv.setGravity(Gravity.CENTER_VERTICAL| Gravity.RIGHT);
             }
         }
 
@@ -185,11 +202,11 @@ public class SnackbarWrapper {
         if (mViewArray != null) {
             for (int i = 0; i < mViewArray.size(); i++) {
                 View addView = mViewArray.get(i);
-                LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT,LinearLayout.LayoutParams.WRAP_CONTENT);//设置新建布局参数
+                LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);//设置新建布局参数
                 //设置新建View在Snackbar内垂直居中显示
                 params.gravity= Gravity.CENTER_VERTICAL;
                 addView.setLayoutParams(params);
-                ((Snackbar.SnackbarLayout)mSnackbar.getView()).addView(addView, i);
+                ((Snackbar.SnackbarLayout) mSnackbar.getView()).addView(addView, i);
             }
         }
 
@@ -198,23 +215,23 @@ public class SnackbarWrapper {
 
         mSnackbar.setCallback(new Snackbar.Callback() {
             @Override
-            public void onDismissed(Snackbar snackbar, int event) {
-                super.onDismissed(snackbar, event);
+            public void onDismissed(Snackbar Snackbar, int event) {
+                super.onDismissed(Snackbar, event);
                 // Clean up (NOTE! This callback can be called multiple times)
                 if (snackbarContainer.getParent() != null && rootView.getParent() != null) {
                     windowManager.removeView(snackbarContainer);
                     windowManager.removeView(rootView);
                 }
                 if (externalCallback != null) {
-                    externalCallback.onDismissed(snackbar, event);
+                    externalCallback.onDismissed(Snackbar, event);
                 }
             }
 
             @Override
-            public void onShown(Snackbar snackbar) {
-                super.onShown(snackbar);
+            public void onShown(Snackbar Snackbar) {
+                super.onShown(Snackbar);
                 if (externalCallback != null) {
-                    externalCallback.onShown(snackbar);
+                    externalCallback.onShown(Snackbar);
                 }
             }
         });
@@ -273,7 +290,7 @@ public class SnackbarWrapper {
         return background;
     }
 
-// ====== SnackbarUtil method start ======
+// ====== SnackBarUtil method start ======
 
     public void setBackgroundColor(@ColorInt int backgroundColor){
         mBackgroundColor = backgroundColor;
@@ -330,5 +347,9 @@ public class SnackbarWrapper {
     public void setOverStatusHeight(boolean overStatus, int statusHeight) {
         this.overStatus = overStatus;
         this.snackbarHeight = statusHeight;
+    }
+
+    public void setTextSize(float textSize) {
+        mTextSize = textSize;
     }
 }

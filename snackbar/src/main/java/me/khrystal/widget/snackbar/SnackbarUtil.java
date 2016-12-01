@@ -8,22 +8,22 @@ import android.support.annotation.ColorInt;
 import android.support.annotation.DrawableRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.annotation.StringRes;
 import android.util.Log;
 import android.view.Gravity;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.LinearLayout;
 
-/**
- * usage:
- * author: kHRYSTAL
- * create time: 16/11/23
- * update time:
- * email: 723526676@qq.com
- */
 
+/**
+ * SnackBar 工具类
+ */
 public class SnackbarUtil {
+
+    // 提示信息类型
+    public static final int TYPE_INFO = 0;
+    public static final int TYPE_CONFIRM = 1;
+    public static final int TYPE_WARNING = 2;
+    public static final int TYPE_DANGER = 3;
 
     private static final int color_info = 0XFF2094F3;
     private static final int color_confirm = 0XFF4CB04E;
@@ -31,209 +31,245 @@ public class SnackbarUtil {
     private static final int color_danger = 0XFFF44336;
 
     private SnackbarWrapper mWrapper = null;
-
+    private static SnackbarUtil instance = null;
     /**
      * this context must be ApplicationContext
      */
-    private static Context mContext;
+    private Context mContext;
 
-    private SnackbarUtil(@NonNull SnackbarWrapper wrapper){
+    public static SnackbarUtil getInstance(Context context) {
+        if (instance == null) {
+            synchronized (SnackbarUtil.class) {
+                if (instance == null) {
+                    instance = new SnackbarUtil(SnackbarWrapper.make(context.getApplicationContext(), "", Snackbar.LENGTH_SHORT));
+                }
+            }
+        }
+        return instance;
+    }
+
+    private SnackbarUtil(@NonNull SnackbarWrapper wrapper) {
         this.mWrapper = wrapper;
-    }
-
-    public SnackbarWrapper getWrapper() {
-        return mWrapper;
-    }
-
-    public static SnackbarUtil setShort(Context context, String message) {
-        mContext = context;
-        return new SnackbarUtil(SnackbarWrapper.make(context, message, Snackbar.LENGTH_SHORT))
-                .setBackgroundColor(0XFF323232);
-    }
-
-    public static SnackbarUtil setLong(Context context, String message) {
-        mContext = context;
-        return new SnackbarUtil(SnackbarWrapper.make(context, message, Snackbar.LENGTH_LONG))
-                .setBackgroundColor(0XFF323232);
-    }
-
-    public static SnackbarUtil setIndefinite(Context context, String message){
-        mContext = context;
-        return new SnackbarUtil(SnackbarWrapper.make(context, message, Snackbar.LENGTH_INDEFINITE))
-                .setBackgroundColor(0XFF323232);
-    }
-
-    public SnackbarUtil setCustom(Context context, String message, int duration) {
-        mContext = context;
-        return new SnackbarUtil(SnackbarWrapper.make(context, message, Snackbar.LENGTH_SHORT).setDuration(duration))
-                .setBackgroundColor(0XFF323232);
-    }
-
-    public SnackbarUtil info() {
-        mWrapper.setBackgroundColor(color_info);
-        return new SnackbarUtil(mWrapper);
-    }
-
-    public SnackbarUtil confirm() {
-        mWrapper.setBackgroundColor(color_confirm);
-        return new SnackbarUtil(mWrapper);
-    }
-
-    public SnackbarUtil warning() {
-        mWrapper.setBackgroundColor(color_warning);
-        return new SnackbarUtil(mWrapper);
-    }
-
-    public SnackbarUtil danger() {
-        mWrapper.setBackgroundColor(color_danger);
-        return new SnackbarUtil(mWrapper);
+        mContext = mWrapper.getContext();
     }
 
     /**
-     * set Snackbar background
+     * 设置文案
+     */
+    public SnackbarUtil setMessage(CharSequence message) {
+        mWrapper.setMessage(message);
+        return instance;
+    }
+
+    /**
+     * 设置SnackBar 显示类型
      *
-     * @param backgroundColor
-     * @return
+     * @param showType SnackBarView.LENGTH_SHORT or SnackBarView.LENGTH_LONG or SnackBarView.LENGTH_INDEFINITE
+     */
+    public SnackbarUtil setShowType(int showType) {
+        mWrapper.setDuration(showType);
+        return instance;
+    }
+
+    /**
+     * 设置 SnackBar 类型，显示不同的背景色
+     */
+    public SnackbarUtil setSnackBarType(int snackBarType) {
+        switch (snackBarType) {
+            case TYPE_INFO:
+                mWrapper.setBackgroundColor(color_info);
+                break;
+            case TYPE_CONFIRM:
+                mWrapper.setBackgroundColor(color_confirm);
+                break;
+            case TYPE_WARNING:
+                mWrapper.setBackgroundColor(color_warning);
+                break;
+            case TYPE_DANGER:
+                mWrapper.setBackgroundColor(color_danger);
+                break;
+        }
+        return instance;
+    }
+
+    /**
+     * 设置显示时长
+     */
+    public SnackbarUtil setDuration(@Snackbar.Duration int duration) {
+        mWrapper.setDuration(duration);
+        return instance;
+    }
+
+    /**
+     * 设置背景颜色
      */
     public SnackbarUtil setBackgroundColor(@ColorInt int backgroundColor) {
         mWrapper.setBackgroundColor(backgroundColor);
-        return new SnackbarUtil(mWrapper);
+        return instance;
     }
 
+    /**
+     * 设置文字颜色
+     */
     public SnackbarUtil setMessageColor(@ColorInt int messageColor) {
         mWrapper.setTextColor(messageColor);
-        return new SnackbarUtil(mWrapper);
+        return instance;
     }
 
+    /**
+     * 设置点击颜色
+     */
     public SnackbarUtil setActionColor(@ColorInt int actionColor) {
         mWrapper.setActionColor(actionColor);
-        return new SnackbarUtil(mWrapper);
+        return instance;
     }
 
-    public SnackbarUtil setColors(@ColorInt int backgroundColor, @ColorInt int messageColor,
-                                   @ColorInt int actionColor) {
-        mWrapper.setBackgroundColor(backgroundColor);
-        mWrapper.setTextColor(messageColor);
-        mWrapper.setActionColor(actionColor);
-        return new SnackbarUtil(mWrapper);
-    }
-
-    public SnackbarUtil setAlpha(float alpha) {
+    /**
+     * 设置透明度
+     */
+    public SnackbarUtil setBackgroundAlpha(float alpha) {
         alpha = alpha >= 1.0f ? 1.0f : (alpha <= 0.0f ? 0.0f : alpha);
         mWrapper.setAlpha(alpha);
-        return new SnackbarUtil(mWrapper);
+        return instance;
     }
 
-    public SnackbarUtil setGrivaty(int grivaty) {
-        mWrapper.setGrivaty(grivaty);
-        return new SnackbarUtil(mWrapper);
+    /**
+     * 设置 Gravity  默认为top
+     */
+    public SnackbarUtil setGravity(int gravity) {
+        mWrapper.setGrivaty(gravity);
+        return instance;
     }
 
-    public SnackbarUtil setAction(@StringRes int resId, View.OnClickListener listener){
-        return setAction(mContext.getResources().getText(resId), listener);
+    /**
+     * 支持右侧添加按钮
+     *
+     * @param text     按钮文案
+     * @param listener 按钮点击事件
+     */
+    public SnackbarUtil setAction(CharSequence text, View.OnClickListener listener) {
+        mWrapper.setAction(text, listener);
+        return instance;
     }
 
-    public SnackbarUtil setAction(CharSequence text, View.OnClickListener listener){
-        mWrapper.setAction(text,listener);
-        return new SnackbarUtil(mWrapper);
-    }
-
+    /**
+     * 设置回调
+     */
     public SnackbarUtil setCallback(Snackbar.Callback callback) {
         mWrapper.setCallback(callback);
-        return new SnackbarUtil(mWrapper);
+        return instance;
     }
 
-    public SnackbarUtil leftAndRightDrawable(@Nullable @DrawableRes Integer leftDrawable, @Nullable @DrawableRes Integer rightDrawable){
+    /**
+     * 设置文字左右图片
+     */
+    public SnackbarUtil setLeftAndRightDrawable(@Nullable @DrawableRes Integer leftDrawable, @Nullable @DrawableRes Integer rightDrawable) {
         Drawable drawableLeft = null;
         Drawable drawableRight = null;
-        if(leftDrawable != null){
+        if (leftDrawable != null) {
             try {
                 drawableLeft = mContext.getResources().getDrawable(leftDrawable.intValue());
-            }catch (Exception e){
+            } catch (Exception e) {
                 Log.e("SnackbarUtil", "leftDrawable");
                 e.printStackTrace();
             }
         }
-        if(rightDrawable != null){
+        if (rightDrawable != null) {
             try {
                 drawableRight = mContext.getResources().getDrawable(rightDrawable.intValue());
-            }catch (Exception e){
+            } catch (Exception e) {
                 Log.e("SnackbarUtil", "rightDrawable");
                 e.printStackTrace();
             }
         }
-        return leftAndRightDrawable(drawableLeft,drawableRight);
-    }
-
-    public SnackbarUtil leftAndRightDrawable(@Nullable Drawable leftDrawable, @Nullable Drawable rightDrawable){
-        mWrapper.setLeftAndRightDrawable(leftDrawable, rightDrawable);
-        return new SnackbarUtil(mWrapper);
-    }
-
-    @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR1)
-    public SnackbarUtil setMessageCenter(boolean isCenter) {
-        mWrapper.setMessageCenter(isCenter);
-        return new SnackbarUtil(mWrapper);
-    }
-
-    public SnackbarUtil addView(int layoutId, int index) {
-        View addView = LayoutInflater.from(mContext).inflate(layoutId,null);
-        return addView(addView,index);
-    }
-
-    public SnackbarUtil addView(View addView, int index) {
-        LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT,LinearLayout.LayoutParams.WRAP_CONTENT);//设置新建布局参数
-        params.gravity= Gravity.CENTER_VERTICAL;
-        addView.setLayoutParams(params);
-        mWrapper.addChildView(addView,index);
-        return new SnackbarUtil(mWrapper);
-    }
-
-    public SnackbarUtil margins(int margin){
-        return margins(margin,margin,margin,margin);
+        return setLeftAndRightDrawable(drawableLeft, drawableRight);
     }
 
     /**
-     * 调用margins后再调用 gravityFrameLayout,则margins无效.
-     * @param left
-     * @param top
-     * @param right
-     * @param bottom
-     * @return
+     * 设置文字左右图片
      */
-    public SnackbarUtil margins(int left, int top, int right, int bottom){
+    public SnackbarUtil setLeftAndRightDrawable(@Nullable Drawable leftDrawable, @Nullable Drawable rightDrawable) {
+        mWrapper.setLeftAndRightDrawable(leftDrawable, rightDrawable);
+        return instance;
+    }
+
+    /**
+     * 设置文字居中 APIversion > 17
+     */
+    @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR1)
+    public SnackbarUtil setMessageCenter(boolean isCenter) {
+        mWrapper.setMessageCenter(isCenter);
+        return instance;
+    }
+
+    /**
+     * 添加自定义view
+     */
+    public SnackbarUtil addView(View addView, int index) {
+        LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);//设置新建布局参数
+        params.gravity = Gravity.CENTER_VERTICAL;
+        addView.setLayoutParams(params);
+        mWrapper.addChildView(addView, index);
+        return instance;
+    }
+
+    /**
+     * 设置上下左右边距
+     */
+    public SnackbarUtil setMargins(int left, int top, int right, int bottom) {
         mWrapper.setMargins(left, top, right, bottom);
-        return new SnackbarUtil(mWrapper);
+        return instance;
     }
 
-    public SnackbarUtil setRadius(float radius){
+    /**
+     * 设置四个角度值
+     */
+    public SnackbarUtil setRadius(float radius) {
         mWrapper.setRadius(radius);
-        return new SnackbarUtil(mWrapper);
+        return instance;
     }
 
-    public void show(){
-        if(mWrapper != null){
-            mWrapper.show();
-        }else {
-            throw new NullPointerException("SnackbarWrapper is null!");
-        }
-    }
-
-    public SnackbarUtil setHeightOverStatus(boolean overStatus, float titlebarHeight) {
+    /**
+     * 设置是否覆盖状态栏
+     *
+     * @param titlebarHeight 工具栏高度 传递参数单位是px
+     */
+    public SnackbarUtil setCoverStatusbar(boolean overStatus, float titlebarHeight) {
         if (overStatus) {
-            int snackbarHeight = ScreenUtil.getStatusHeight(mContext) + ScreenUtil.dp2px(mContext, titlebarHeight);
+            int snackbarHeight = ScreenUtil.getStatusHeight(mContext) + (int) titlebarHeight;
             mWrapper.setOverStatusHeight(overStatus, snackbarHeight);
         }
-        return new SnackbarUtil(mWrapper);
+        return instance;
     }
 
-    public SnackbarUtil setHeightOverStatus(boolean overStatus) {
+    /**
+     * 设置是否覆盖状态栏
+     */
+    public SnackbarUtil setCoverStatusbar(boolean overStatus) {
         if (overStatus) {
             int snackbarHeight = ScreenUtil.getStatusHeight(mContext) +
                     ScreenUtil.getActionBarHeight(mContext);
             mWrapper.setOverStatusHeight(overStatus, snackbarHeight);
         }
-        return new SnackbarUtil(mWrapper);
+        return instance;
     }
 
+    /**
+     * 设置字体大小
+     */
+    public SnackbarUtil setMessageTextSize(float spSize) {
+        mWrapper.setTextSize(spSize);
+        return instance;
+    }
+
+    /**
+     * 显示snack bar
+     */
+    public void show() {
+        if (mWrapper != null) {
+            mWrapper.show();
+        } else {
+            throw new NullPointerException("SnackBarWrapper is null!");
+        }
+    }
 }

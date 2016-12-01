@@ -12,15 +12,15 @@ the snack like iOS notification, support:
 
 #### Usage  
 
-```
-// notice: must use applicationContext
-SnackbarUtil.setShort(getApplicationContext(), your message)
+```           
+ SnackbarUtil.getInstance(this)
+                .setMessage("Success~") // your message
                 .setMessageColor(0xffffffff) // @ColorInt
-                .setAlpha(0.8f) // 0.0f ~ 1.0f
+                .setBackgroundAlpha(0.9f) //0.0f ~ 1.0f
                 .setBackgroundColor(0xffffc026) // @ColorInt
-                .leftAndRightDrawable(your drawable, null) // resId or drawable
-                .setHeightOverStatus(true) // cover status bar
-                .setGrivaty(Gravity.TOP).show();
+                .setLeftAndRightDrawable(R.drawable.img_prompt_check, null) // resId or drawable
+                .setCoverStatusbar(true) // cover status bar
+                .setGravity(Gravity.TOP).show();                
 ```
 
 ```
