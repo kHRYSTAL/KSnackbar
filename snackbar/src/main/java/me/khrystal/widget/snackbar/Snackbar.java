@@ -27,6 +27,7 @@ import android.support.v4.view.ViewPropertyAnimatorListenerAdapter;
 import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
